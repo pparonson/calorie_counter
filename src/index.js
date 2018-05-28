@@ -1,9 +1,8 @@
-import h from "hyperscript";
-import hh from "hyperscript-helpers";
+import app from "./app";
+import initModel from "./model";
+import update from "./update";
+import view from "./view";
 
-const {div, button} = hh(h);
+const node  = document.getElementById("app");
 
-const title = div({className: "mv2"}, "Hello World");
-const nodeTitle = document.getElementById("appTitle");
-
-nodeTitle.appendChild(title);
+app(initModel, view, update, node);
