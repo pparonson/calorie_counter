@@ -20,20 +20,4 @@ function app(_model, _view, _update, _node) {
   }
 }
 
-// function app(_model, _update, _view, _node) {
-//   let model = _model;
-//   let currentView = _view(dispatch, model);
-//   _node.appendChild(currentView);
-//
-//   function dispatch(_msg) {
-//     // update model state
-//     model = _update(_msg, model);
-//     const updatedView = _view(dispatch, model);
-//     _node.replaceChild(updatedView, currentView);
-//
-//     // update view state
-//     currentView = updatedView;
-//   }
-// }
-
 export default app;

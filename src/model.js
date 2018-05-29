@@ -1,7 +1,7 @@
 const initModel = {
   description: "Breakfast"
-  , calories: 0
-  , showForm: true
+  , calories: 480
+  , showForm: false
   , nextId: 0
   , editId: null
   , meals: []

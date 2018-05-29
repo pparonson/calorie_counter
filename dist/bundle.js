@@ -150,22 +150,6 @@ function app(_model, _view, _update, _node) {
   }
 }
 
-// function app(_model, _update, _view, _node) {
-//   let model = _model;
-//   let currentView = _view(dispatch, model);
-//   _node.appendChild(currentView);
-//
-//   function dispatch(_msg) {
-//     // update model state
-//     model = _update(_msg, model);
-//     const updatedView = _view(dispatch, model);
-//     _node.replaceChild(updatedView, currentView);
-//
-//     // update view state
-//     currentView = updatedView;
-//   }
-// }
-
 exports.default = app;
 
 /***/ }),
@@ -2073,8 +2057,8 @@ Object.defineProperty(exports, "__esModule", {
 });
 var initModel = {
   description: "Breakfast",
-  calories: 0,
-  showForm: true,
+  calories: 480,
+  showForm: false,
   nextId: 0,
   editId: null,
   meals: []
@@ -2092,7 +2076,57 @@ exports.default = initModel;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+exports.showFormMsg = showFormMsg;
+exports.mealsInputMsg = mealsInputMsg;
+exports.caloriesInputMsg = caloriesInputMsg;
+var MSGS = {
+  SHOW_FORM: "SHOW_FORM",
+  MEALS_INPUT: "MEALS_INPUT",
+  CALORIES_INPUT: "CALORIES_INPUT"
+};
+
+function showFormMsg(showForm) {
+  return {
+    type: MSGS.SHOW_FORM
+    // literal syntax (ie showForm: true)
+    , showForm: showForm
+  };
+}
+
+function mealsInputMsg(_description) {
+  return {
+    type: MSGS.MEALS_INPUT,
+    description: _description
+  };
+}
+
+function caloriesInputMsg(_calories) {
+  return {
+    type: MSGS.CALORIES_INPUT,
+    calories: _calories
+  };
+}
+
 function update(_msg, _model) {
+  if (_msg.type === "SHOW_FORM") {
+    var showForm = _msg.showForm;
+    // return the model with new property values
+
+    return _extends({}, _model, { showForm: showForm, description: "", calories: 0 });
+  }
+  if (_msg.type === "MEALS_INPUT") {
+    var description = _msg.description;
+
+    return _extends({}, _model, { description: description });
+  }
+  if (_msg.type === "CALORIES_INPUT") {
+    var calories = _msg.calories;
+
+    return _extends({}, _model, { calories: calories });
+  }
   return _model;
 }
 
@@ -2115,6 +2149,8 @@ var _hyperscriptHelpers = __webpack_require__(3);
 
 var _hyperscriptHelpers2 = _interopRequireDefault(_hyperscriptHelpers);
 
+var _update = __webpack_require__(41);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var _hh = (0, _hyperscriptHelpers2.default)(_virtualDom.h),
@@ -2132,15 +2168,20 @@ function buttonSet(_dispatch) {
     type: "submit"
   }, "Save"), button({
     className: "f3 pv2 ph3 bg-light-grey bn dim",
-    type: "button"
+    type: "button",
+    onclick: function onclick() {
+      return _dispatch((0, _update.showFormMsg)(false));
+    }
   }, "Cancel")]);
 }
 
-function fieldSet(_labelText, _inputValue) {
+function fieldSet(_labelText, _inputValue, oninput) {
   return div([label({ className: "db mb1" }, _labelText), input({
     className: "pa2 input-reset ba w-100 mb2",
     type: "text",
-    value: _inputValue })]);
+    value: _inputValue,
+    oninput: oninput
+  })]);
 }
 
 function formView(_dispatch, _model) {
@@ -2149,10 +2190,19 @@ function formView(_dispatch, _model) {
       showForm = _model.showForm;
 
   if (showForm) {
-    return form({ className: "w-100 mv2" }, [fieldSet("Meal", description), fieldSet("Calories", calories || ""), buttonSet(_dispatch)]);
+    return form({ className: "w-100 mv2" }, [fieldSet("Meal", description, function (e) {
+      return _dispatch((0, _update.mealsInputMsg)(e.target.value));
+    }), fieldSet("Calories", calories || "", function (e) {
+      return _dispatch((0, _update.caloriesInputMsg)(e.target.value));
+    }), buttonSet(_dispatch)]);
   }
 
-  return button({ className: "f3 pv2 ph3 bg-blue white bn" }, "Add Meal");
+  return button({
+    className: "f3 pv2 ph3 bg-blue white bn",
+    onclick: function onclick() {
+      return _dispatch((0, _update.showFormMsg)(true));
+    }
+  }, "Add Meal");
 }
 
 function view(_dispatch, _model) {
