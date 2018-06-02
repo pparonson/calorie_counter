@@ -33,8 +33,11 @@ function totalCaloriesRow(_className, _meals) {
     getTotalCalories
     , getCalories
   )(_meals);
-  return tr({className: _className}
-    , cell(td, "pa2 tr", total))
+  return tr({className: _className}, [
+    cell(td, "pa2", "Total:")
+    , cell(td, "pa2 tr", total)
+    , cell(td, "", "")
+  ]);
 }
 
 function tableBody(_className, _meals) {
