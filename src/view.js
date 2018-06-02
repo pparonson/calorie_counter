@@ -1,9 +1,62 @@
 import {h} from "virtual-dom";
 import hh from "hyperscript-helpers";
+import * as R from "ramda";
 
-import {showFormMsg, mealsInputMsg, caloriesInputMsg} from "./update";
+import {
+  showFormMsg
+  , mealsInputMsg
+  , caloriesInputMsg
+  , saveMealMsg
+} from "./update";
 
-const {pre, div, h1, button, form, label, input} = hh(h);
+import initModel from "./model";
+
+const {pre, div, h1, button, form, label, input, table, thead, tbody, tr, th
+  , td} = hh(h);
+
+// Create the meal cells (th, td)
+function cell(_tag, _className, _value) {
+  return _tag({className: _className}, _value);
+}
+
+function mealRow(_className, _meal) {
+  return tr({className: _className}, [
+    cell(td, "pa2", _meal.description)
+    , cell(td, "pa2 tr", _meal.calories)
+    // edit and delete buttons
+    , cell(td, "pa2", [])
+  ]);
+}
+
+function totalCaloriesRow(_className, _meals) {
+  const total = R.compose(
+    getTotalCalories
+    , getCalories
+  )(_meals);
+  return tr({className: _className}
+    , cell(td, "pa2 tr", total))
+}
+
+function tableBody(_className, _meals) {
+  const rows = R.map(R.partial(mealRow, ["pa2 stripe-dark"])
+    , _meals);
+  return tbody({className: _className}
+    // returns array of child elements
+    , [
+      rows
+      , totalCaloriesRow("bt, b", _meals)
+    ]);
+}
+
+const headerRow = tr({className: ""}, [
+  cell(th, "pa2", "MEAL")
+  , cell(th, "pa2", "CALORIES")
+  , cell(th, "", "")
+]);
+
+function tableHead(_className) {
+  return thead({className: _className}, headerRow);
+}
 
 function buttonSet(_dispatch) {
   return div(
@@ -38,7 +91,15 @@ function fieldSet(_labelText, _inputValue, oninput) {
 function formView(_dispatch, _model) {
   const {description, calories, showForm} = _model;
   if (showForm) {
-    return form({className: "w-100 mv2"}, [
+    return form(
+      {
+        className: "w-100 mv2"
+        , onsubmit: e => {
+          // prevent default form http post request
+          e.preventDefault();
+          _dispatch(saveMealMsg);
+        }
+      }, [
       fieldSet("Meal", description
         , e => _dispatch(mealsInputMsg(e.target.value)))
       , fieldSet("Calories", calories || ""
@@ -59,8 +120,21 @@ function view(_dispatch, _model) {
     h1({className: "f2 pv2 bb"}, "Calorie Counter")
     , formView(_dispatch, _model)
     // creates pre-tag for pre-formated text
-    , pre( JSON.stringify(_model, null, 2) )
+    // , pre( JSON.stringify(_model, null, 2) )
+    // table below
+    , tableHead("")
+    , tableBody("", _model.meals)
   ]);
 }
+
+// helpers
+// point-free: meals; returns fn that takes an array of obj
+const getCalories = R.map(item => item.calories);
+
+function sum(x, y) {
+  return x + y;
+}
+// point-free: meals; returns a fn that takes an array of int
+const getTotalCalories = R.reduce(sum, 0);
 
 export default view;

@@ -4,7 +4,11 @@ const initModel = {
   , showForm: false
   , nextId: 0
   , editId: null
-  , meals: []
+  , meals: [
+    {description: "breakfast", calories: 460}
+  , {description: "snack", calories: 180}
+  , {description: "lunch", calories: 600}
+  ]
 };
 
 export default initModel;
