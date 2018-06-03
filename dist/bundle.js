@@ -16203,10 +16203,11 @@ function mealRow(_className, _meal) {
 
 function totalCaloriesRow(_className, _meals) {
   var total = R.compose(getTotalCalories, getCalories)(_meals);
-  return tr({ className: _className }, [cell(td, "pa2", "TOTAL:"), cell(td, "pa2 tr", total), cell(td, "", "")]);
+  return tr({ className: _className }, [cell(td, "pa2", "Total:"), cell(td, "pa2 tr", total), cell(td, "", "")]);
 }
 
 function tableBody(_className, _meals) {
+  // transform array of meals to array of html rows
   var rows = R.map(R.partial(mealRow, ["pa2 stripe-dark"]), _meals);
   return tbody({ className: _className
     // returns array of child elements
@@ -16217,6 +16218,13 @@ var headerRow = tr({ className: "" }, [cell(th, "pa2", "MEAL"), cell(th, "pa2", 
 
 function tableHead(_className) {
   return thead({ className: _className }, headerRow);
+}
+
+function createTable(_meals) {
+  if (_meals.length === 0) {
+    return div({ className: "mv2 i black-50" }, "No meals to display...");
+  }
+  return table({ className: "mv2 w-100 collapse" }, [tableHead(""), tableBody("", _meals)]);
 }
 
 function buttonSet(_dispatch) {
@@ -16271,10 +16279,10 @@ function formView(_dispatch, _model) {
 
 function view(_dispatch, _model) {
   return div({ className: "mw6 center" }, [h1({ className: "f2 pv2 bb" }, "Calorie Counter"), formView(_dispatch, _model)
-  // creates pre-tag for pre-formated text
-  // , pre( JSON.stringify(_model, null, 2) )
   // table below
-  , tableHead(""), tableBody("", _model.meals)]);
+  , createTable(_model.meals)
+  // creates pre-tag for pre-formated text
+  , pre(JSON.stringify(_model, null, 2))]);
 }
 
 // helpers

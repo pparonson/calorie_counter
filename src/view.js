@@ -41,6 +41,7 @@ function totalCaloriesRow(_className, _meals) {
 }
 
 function tableBody(_className, _meals) {
+  // transform array of meals to array of html rows
   const rows = R.map(R.partial(mealRow, ["pa2 stripe-dark"])
     , _meals);
   return tbody({className: _className}
@@ -59,6 +60,16 @@ const headerRow = tr({className: ""}, [
 
 function tableHead(_className) {
   return thead({className: _className}, headerRow);
+}
+
+function createTable(_meals) {
+  if (_meals.length === 0) {
+    return div({className: "mv2 i black-50"}, "No meals to display...");
+  }
+  return table({className: "mv2 w-100 collapse"}, [
+    tableHead("")
+    , tableBody("", _meals)
+  ]);
 }
 
 function buttonSet(_dispatch) {
@@ -122,11 +133,10 @@ function view(_dispatch, _model) {
   return div({className: "mw6 center"}, [
     h1({className: "f2 pv2 bb"}, "Calorie Counter")
     , formView(_dispatch, _model)
-    // creates pre-tag for pre-formated text
-    // , pre( JSON.stringify(_model, null, 2) )
     // table below
-    , tableHead("")
-    , tableBody("", _model.meals)
+    , createTable(_model.meals)
+    // creates pre-tag for pre-formated text
+    , pre( JSON.stringify(_model, null, 2) )
   ]);
 }
 
