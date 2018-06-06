@@ -7,24 +7,31 @@ import {
   , mealsInputMsg
   , caloriesInputMsg
   , saveMealMsg
+  , deleteMealMsg
 } from "./update";
 
 import initModel from "./model";
 
 const {pre, div, h1, button, form, label, input, table, thead, tbody, tr, th
-  , td} = hh(h);
+  , td, i} = hh(h);
 
 // Create the meal cells (th, td)
 function cell(_tag, _className, _value) {
   return _tag({className: _className}, _value);
 }
 
-function mealRow(_className, _meal) {
+function mealRow(_dispatch, _className, _meal) {
   return tr({className: _className}, [
     cell(td, "pa2", _meal.description)
     , cell(td, "pa2 tr", _meal.calories)
     // edit and delete buttons
-    , cell(td, "pa2", [])
+    , cell(td, "pa2", [
+      // trash: className: "ph1 fa fa-trash-o pointer"
+      i({
+        className: "fas fa-trash ph1 pointer"
+        , onclick: () => _dispatch(deleteMealMsg(_meal.id))
+      })
+    ])
   ]);
 }
 
@@ -40,9 +47,9 @@ function totalCaloriesRow(_className, _meals) {
   ]);
 }
 
-function tableBody(_className, _meals) {
+function tableBody(_dispatch, _className, _meals) {
   // transform array of meals to array of html rows
-  const rows = R.map(R.partial(mealRow, ["pa2 stripe-dark"])
+  const rows = R.map(R.partial(mealRow, [_dispatch, "pa2 stripe-dark"])
     , _meals);
   return tbody({className: _className}
     // returns array of child elements
@@ -62,13 +69,13 @@ function tableHead(_className) {
   return thead({className: _className}, headerRow);
 }
 
-function createTable(_meals) {
+function createTable(_dispatch, _meals) {
   if (_meals.length === 0) {
     return div({className: "mv2 i black-50"}, "No meals to display...");
   }
   return table({className: "mv2 w-100 collapse"}, [
     tableHead("")
-    , tableBody("", _meals)
+    , tableBody(_dispatch, "", _meals)
   ]);
 }
 
@@ -134,7 +141,7 @@ function view(_dispatch, _model) {
     h1({className: "f2 pv2 bb"}, "Calorie Counter")
     , formView(_dispatch, _model)
     // table below
-    , createTable(_model.meals)
+    , createTable(_dispatch, _model.meals)
     // creates pre-tag for pre-formated text
     , pre( JSON.stringify(_model, null, 2) )
   ]);

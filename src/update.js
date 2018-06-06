@@ -5,6 +5,7 @@ const MSGS = {
   , MEALS_INPUT: "MEALS_INPUT"
   , CALORIES_INPUT: "CALORIES_INPUT"
   , SAVE_MEAL: "SAVE_MEAL"
+  , DELETE_MEAL: "DELETE_MEAL"
 };
 
 export function showFormMsg(showForm) {
@@ -33,6 +34,13 @@ export function caloriesInputMsg(_calories) {
 
 export const saveMealMsg = {type: MSGS.SAVE_MEAL};
 
+export function deleteMealMsg(_id) {
+  return {
+    type: MSGS.DELETE_MEAL
+    , id: _id
+  };
+}
+
 function update(_msg, _model) {
   if (_msg.type === "SHOW_FORM") {
     const {showForm} = _msg;
@@ -55,6 +63,15 @@ function update(_msg, _model) {
   if (_msg.type === "SAVE_MEAL") {
     return add(_msg, _model);
   }
+  if (_msg.type === "DELETE_MEAL") {
+    const {id} = _msg;
+    const _meals = R.filter(item => item.id !== id, _model.meals);
+    // return new filtered meals array
+    return {
+      ..._model, meals: _meals
+    }
+  }
+  // else
   return _model;
 }
 
@@ -67,6 +84,7 @@ function add(_msg, _model) {
   // return a new model with properties clear and inc nextId
   return {
     ..._model
+    , id: nextId
     , description: ""
     , calories: 0
     , showForm: false
