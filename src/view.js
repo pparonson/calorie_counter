@@ -8,6 +8,7 @@ import {
   , caloriesInputMsg
   , saveMealMsg
   , deleteMealMsg
+  , editMealMsg
 } from "./update";
 
 import initModel from "./model";
@@ -30,6 +31,10 @@ function mealRow(_dispatch, _className, _meal) {
       i({
         className: "fas fa-trash ph1 pointer"
         , onclick: () => _dispatch(deleteMealMsg(_meal.id))
+      })
+      , i({
+        className: "fas fa-edit ph1 pointer"
+        , onclick: () => _dispatch(editMealMsg(_meal.id))
       })
     ])
   ]);
